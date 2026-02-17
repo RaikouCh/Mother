@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>For You 💖</title>
+    <style>
+        :root{ --bg1:#fad0c4; --bg2:#ffd1ff; --card:#fff8fb; --accent:#ff4b6e; --text:#3b2b33 }
+        html,body{height:100%;}
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(255,255,255,0.06), transparent 6%),
+                linear-gradient(135deg, var(--bg1), var(--bg2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+        }
+
+        /* Paper texture overlay */
+        body::after{
+            content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+            background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 10px 10px; opacity:0.9;
+            mix-blend-mode: overlay;
+        }
+
+        /* Decorative sparkles */
+        .sparkles{ position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+        .sparkle{ position:absolute; width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6); opacity:0.85; transform:scale(.6); animation: drift 6s linear infinite; }
+        @keyframes drift{ 0%{ transform:translateY(20vh) scale(.6); opacity:0 } 10%{opacity:.9} 100%{ transform:translateY(-120vh) scale(1.1); opacity:0 } }
+
+        .hearts{ position:absolute; inset:0; pointer-events:none; z-index:0; }
+        .heart{ position:absolute; width:22px; height:22px; background:linear-gradient(45deg,#fff0f6,#ffd7e8); transform:rotate(45deg); border-radius:3px; box-shadow:0 8px 18px rgba(0,0,0,0.08); opacity:.95; animation: rise linear infinite; }
+        .heart.small{ width:12px; height:12px; opacity:0.9; box-shadow:0 6px 12px rgba(0,0,0,0.06); }
+        .heart.big{ width:36px; height:36px; opacity:0.95; box-shadow:0 18px 36px rgba(0,0,0,0.12); }
+        /* additional float-up effect used on First Page */
+        @keyframes floatUp{
+            0%{ transform: translateY(0) scale(0.9) rotate(45deg); opacity:0 }
+            10%{ opacity:0.95 }
+            100%{ transform: translateY(-140vh) scale(1.05) rotate(45deg); opacity:0 }
+        }
+        .heart:before, .heart:after{ content:''; position:absolute; width:22px; height:22px; background:inherit; border-radius:50%; top:-11px; left:0 }
+        .heart:after{ left:11px }
+        @keyframes rise{ 0%{ transform:translateY(0) rotate(45deg) scale(.9); opacity:0 } 5%{opacity:.95} 100%{ transform:translateY(-140vh) rotate(45deg) scale(1.05); opacity:0 } }
+
+        /* Respect reduced motion */
+        @media (prefers-reduced-motion: reduce){
+            .sparkle, .heart{ animation: none; opacity: 0.9 }
+        }
+
+        .letter-wrapper{ position:relative; width:min(760px,94vw); padding:28px; z-index:2; display:flex; justify-content:center; }
+        .letter-card{
+            /* warm paper background with subtle tone for Valentines */
+            background: linear-gradient(180deg, #fff6f6 0%, #fff2f4 40%, #fffaf9 100%);
+            width:100%; max-width:720px;
+            padding:40px 38px 30px 38px;
+            border-radius:14px;
+            /* stronger soft shadow to lift paper from background */
+            box-shadow: 0 40px 90px rgba(60,20,30,0.16), inset 0 1px 0 rgba(255,255,255,0.6);
+            border: 1px solid rgba(230,200,205,0.85);
+            position:relative;
+            overflow:hidden;
+            animation: lift .9s cubic-bezier(.2,.9,.3,1);
+            /* make card scrollable while keeping overall layout fixed */
+            max-height: calc(80vh);
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-right: 22px; /* space for hidden scrollbar on hover */
+        }
+        @keyframes lift{ from{ transform: translateY(8px); opacity:0 } to{ transform:none; opacity:1 } }
+
+        /* decorative layered background (blended gradients + subtle fibers) */
+        .letter-card::before{
+            content:'';
+            position:absolute;
+            left:-20%; top:-10%;
+            width:140%; height:60%;
+            pointer-events:none;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255,82,130,0.08), transparent 14%),
+                radial-gradient(circle at 80% 70%, rgba(255,200,230,0.04), transparent 12%),
+                repeating-linear-gradient(90deg, rgba(0,0,0,0.015) 0 1px, transparent 1px 8px);
+            transform:rotate(-6deg);
+            mix-blend-mode: multiply;
+            opacity:0.95;
+        }
+
+        /* subtle vignette */
+        .letter-card:after{ content:''; position:absolute; inset:0; pointer-events:none; box-shadow: inset 0 28px 60px rgba(0,0,0,0.035); border-radius:14px }
+
+        /* subtle paper grain across the card (separate layer) */
+        .letter-card::after{
+            content:''; position:absolute; inset:6px; pointer-events:none; border-radius:12px;
+            background-image: linear-gradient(135deg, rgba(255,240,242,0.02) 0 2px, transparent 2px 6px), radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 120% 120%, 6px 6px;
+            opacity:0.08; mix-blend-mode: multiply;
+        }
+
+        /* seal / stamp */
+        .seal{ position:absolute; right:18px; top:18px; width:64px; height:64px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #fff6f9, #ffd9e8); box-shadow:0 8px 18px rgba(122,43,58,0.08); display:flex; align-items:center; justify-content:center; transform:rotate(-8deg); opacity:0.98 }
+        .seal .heart-svg{ width:34px; height:34px; fill:#ff6b8a }
+
+        h1{ color:var(--accent); text-align:center; margin:4px 0 10px 0; font-size:clamp(18px,2.3vw,24px); letter-spacing:0.6px }
+        p{ color:#3b2b33; line-height:1.78; font-size:clamp(15px,1.8vw,18px); margin:0; white-space:pre-wrap; text-align:left; font-family: Georgia, 'Times New Roman', serif; }
+
+        /* signature style */
+        .signature{ margin-top:18px; text-align:right; font-family: 'Brush Script MT', 'Lucida Handwriting', cursive; font-size:20px; color:var(--accent); }
+
+        /* Hide scrollbars by default; show on hover/focus for accessibility */
+        .letter-card{ scrollbar-width: none; -ms-overflow-style: none; }
+        .letter-card::-webkit-scrollbar{ width: 0; height: 0; }
+        .letter-card:hover::-webkit-scrollbar{ width:8px; }
+        .letter-card:hover{ scrollbar-color: rgba(200,80,120,0.6) transparent; }
+        .letter-card::-webkit-scrollbar-thumb{ background: rgba(200,80,120,0.6); border-radius: 6px }
+        .letter-card:focus{ outline: 2px solid rgba(255,100,140,0.12); }
+
+        /* decorative corner hearts */
+        .corner-heart{ position:absolute; width:56px; height:56px; right:18px; top:14px; opacity:.12; transform:rotate(20deg); }
+
+        /* responsive */
+        @media (max-width:560px){
+            .letter-card{ padding:20px }
+            h1{ font-size:18px }
+            p{ font-size:15px }
+            .heart{ width:16px; height:16px }
+        }
+
+        /* Print friendly */
+        @media print{
+            body{ background: #fff; }
+            .letter-card{ box-shadow:none; border:none; background: #fff; }
+            .sparkles, .hearts, .corner-heart{ display:none }
+            p{ color:#000 }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sparkles" aria-hidden="true">
+        <div class="sparkle" style="left:6%; animation-duration:7s; animation-delay:0s"></div>
+        <div class="sparkle" style="left:28%; animation-duration:9s; animation-delay:1s"></div>
+        <div class="sparkle" style="left:54%; animation-duration:8s; animation-delay:.6s"></div>
+        <div class="sparkle" style="left:80%; animation-duration:10s; animation-delay:.2s"></div>
+    </div>
+
+    <div class="hearts" aria-hidden="true">
+        <div class="heart small" style="left:6%; bottom:-5%; animation: floatUp 9s linear infinite; animation-delay:0s"></div>
+        <div class="heart" style="left:16%; bottom:-10%; animation: floatUp 8s linear infinite; animation-delay:.6s"></div>
+        <div class="heart" style="left:28%; bottom:-8%; animation: floatUp 10s linear infinite; animation-delay:.3s"></div>
+        <div class="heart big" style="left:42%; bottom:-12%; animation: floatUp 11s linear infinite; animation-delay:.9s"></div>
+        <div class="heart" style="left:58%; bottom:-6%; animation: floatUp 9.5s linear infinite; animation-delay:.2s"></div>
+        <div class="heart small" style="left:72%; bottom:-9%; animation: floatUp 8.5s linear infinite; animation-delay:.7s"></div>
+        <div class="heart" style="left:86%; bottom:-7%; animation: floatUp 10.5s linear infinite; animation-delay:.4s"></div>
+    </div>
+
+    <div class="letter-wrapper">
+        <div class="letter-card">
+            <svg class="corner-heart" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-4.35-9-7.5C.5 8.9 5 5 8.5 7 11 8.7 12 10 12 10s1-1.3 3.5-3c3.5-2 8 1.9 5.5 6.5C19 16.65 12 21 12 21z" fill="#ffdde6"/></svg>
+            <div class="seal" aria-hidden="true"><svg class="heart-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7-4.35-9-7.5C.5 8.9 5 5 8.5 7 11 8.7 12 10 12 10s1-1.3 3.5-3c3.5-2 8 1.9 5.5 6.5C19 16.65 12 21 12 21z"/></svg></div>
+            <h1>Dear Mom 💖</h1>
+            <p>
+        I want to take a moment to appreciate the most 
+        important person in my life it's you.
+
+        The person who brought me into this world.
+        The person who has always put me before herself.
+        The person who would do anything for me.
+
+        You are the most hardworking, selfless, and loving person I have ever known.
+        Every sacrifice you made, every silent worry you carried, every time you chose
+        my happiness over your own, I see it now, and I am forever grateful.
+
+        Thank you for your patience when I was difficult.
+        Thank you for your strength when I was weak.
+        Thank you for believing in me when I doubted myself.
+
+        I may not always say it, and sometimes I may forget to show it,
+        but please know that my love for you has never faded.
+
+        Mom, you are my safe place, my greatest comfort, and my biggest blessing.
+        I love you more than words can ever express.
+        Forever your child 💕
+            </p>
+<div class="signature">Forever your child 💕</div>
+        </div>
+    </div>
+
+</body>
+</html>
